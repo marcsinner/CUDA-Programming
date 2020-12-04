@@ -12,7 +12,21 @@ size_t get1DGrid(size_t blockSize, size_t matrixSize) {
 //--------------------------------------------------------------------------------------------------
 __global__ void kernel_matrixMultGlobal(const float *devA, const float *devB, float *devC,
                                         const int size) {
-  // TODO: complete function
+  int row = threadIdx.X;
+  int column = threadIdx.y; 
+
+  if(row < size && column < size){
+
+    // matrix are store colun-wise ? (col1, col2, ..)
+      float acc = 0.0f;
+
+      for (j = 0; j<size; j++){
+          acc += devA[row + size*j] * devB[column*size + j];
+      }
+
+      devC[row + size* column] += acc;
+
+  }
 }
 
 void executeMatrixMultGlobal(dim3 dimBlock, dim3 dimGrid, float *Ad, float *Bd, float *Cd,

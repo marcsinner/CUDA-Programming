@@ -4,7 +4,7 @@
 
 namespace gpu {
 size_t get1DGrid(size_t blockSize, size_t matrixSize) {
-    return (matrixSize-1)/(blockSize+1) //uprounding division
+    return ((matrixSize-1)/blockSize)+1; //uprounding division
     //TODO test: 
     // <build>/tests --gtest_filter=CudaGrids.Grid1D
 }
@@ -13,15 +13,15 @@ size_t get1DGrid(size_t blockSize, size_t matrixSize) {
 //--------------------------------------------------------------------------------------------------
 __global__ void kernel_matrixMultGlobal(const float *devA, const float *devB, float *devC,
                                         const int size) {
-  int row = threadIdx.X;
-  int column = threadIdx.y; 
+  int row = blockIdx.x * blockDim.x + threadIdx.x;
+  int column = blockIdx.y * blockDim.y + threadIdx.y; 
 
-  if(row < size && column < size){
+  if((row < size) && (column < size)){
 
     // matrix are store colun-wise ? (col1, col2, ..)
       float acc = 0.0f;
 
-      for (j = 0; j<size; j++){
+      for (int j = 0; j<size; j++){
           acc += devA[row + size*j] * devB[column*size + j];
       }
 
@@ -47,6 +47,19 @@ template <int TILE_SIZE>
 __global__ void kernel_matrixMultTiled(const float *__restrict__ devA,
                                        const float *__restrict__ devB, float *__restrict__ devC,
                                        const size_t size) {
+__shared__ float shrA[TILE_SIZE][TILE_SIZE];
+__shared__ float shrB[TILE_SIZE][TILE_SIZE];
+
+const int tx = threadIdx.x;
+const int ty = threadIdx.y;
+const int row = blockIdx.x * TILESIZE + tx;
+const int column = blockIdx.y * TILESIZE + ty;
+
+shrA = devA[row]
+
+if(row
+
+
   // TODO: complete function
 }
 

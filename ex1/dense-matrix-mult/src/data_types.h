@@ -14,7 +14,7 @@ enum class KernelType : int {
 struct Configuration {
     bool printMatrix{false};
     bool printInfo{false};
-    int tileSize{8};
+    int tileSize{32}; //changed default tile size from 8 to 32
     int matrixSize{8};
     int numRepeats{1};
     KernelType kernelType{KernelType::KERNEL_CPU};

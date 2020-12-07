@@ -4,8 +4,9 @@
 
 namespace gpu {
 size_t get1DGrid(size_t blockSize, size_t matrixSize) {
-    // TODO: complete function
-    return 1;
+    return (matrixSize-1)/(blockSize+1) //uprounding division
+    //TODO test: 
+    // <build>/tests --gtest_filter=CudaGrids.Grid1D
 }
 
 
@@ -25,6 +26,9 @@ __global__ void kernel_matrixMultGlobal(const float *devA, const float *devB, fl
       }
 
       devC[row + size* column] += acc;
+
+    //TODO test: 
+    // Test: <build>/tests --gtest_filter=MatMult.GPU_GLOBAL
 
   }
 }
@@ -176,9 +180,9 @@ void executeMatrixMultOverlapped(dim3 dimBlock, dim3 dimGrid, float *Ad, float *
 //--------------------------------------------------------------------------------------------------
 void matrixMult(float *Ad, float *Bd, float *Cd, const Configuration &config) {
     // TODO: adjust dimBlock and dimGrid
-    dim3 dimBlock(1, 1);
-    const size_t Grid1D = get1DGrid(1, 1);
-    dim3 dimGrid(1, 1);
+    dim3 dimBlock(config.tileSize,config.tileSize);
+    const size_t Grid1D = get1DGrid(dimBlock.x, config.matrixSize);
+    dim3 dimGrid(Grid1D, Grid1D);
 
     switch (config.kernelType) {
         case KernelType::KERNEL_GLOBAL:
